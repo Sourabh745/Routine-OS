@@ -62,7 +62,6 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
       <section className="px-6 py-24 text-center">
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-purple-950/50 border border-purple-500/20 rounded-full px-4 py-2 mb-8">
@@ -95,7 +94,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
       <section className="px-6 py-20 max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-white text-center mb-4">
           Everything you need to achieve your goals
@@ -116,7 +114,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="px-6 py-20 text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-4">

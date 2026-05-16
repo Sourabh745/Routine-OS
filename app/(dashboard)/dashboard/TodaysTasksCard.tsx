@@ -10,6 +10,7 @@ import { CheckSquare, Clock, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
+import { useRouter } from 'next/navigation'
 
 interface TodaysTasksCardProps {
   initialTasks: Task[]
@@ -22,6 +23,7 @@ const priorityColors = {
 }
 
 export function TodaysTasksCard({ initialTasks }: TodaysTasksCardProps) {
+  const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [updating, setUpdating] = useState<string | null>(null)
 
@@ -35,7 +37,6 @@ export function TodaysTasksCard({ initialTasks }: TodaysTasksCardProps) {
 
     const newStatus = task.status === 'completed' ? 'pending' : 'completed'
 
-    // Optimistic update
     setTasks(prev => prev.map(t => 
       t.id === task.id ? { ...t, status: newStatus as Task['status'] } : t
     ))
@@ -52,8 +53,8 @@ export function TodaysTasksCard({ initialTasks }: TodaysTasksCardProps) {
       if (newStatus === 'completed') {
         toast.success('Task completed! 🎉')
       }
+      router.refresh();
     } catch {
-      // Revert on error
       setTasks(prev => prev.map(t => 
         t.id === task.id ? { ...t, status: task.status } : t
       ))

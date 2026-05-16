@@ -30,6 +30,7 @@ interface GoalsProgressCardProps {
 }
 
 export function GoalsProgressCard({ goals }: GoalsProgressCardProps) {
+  console.log('Rendering GoalsProgressCard with goals:', goals) // Debug log
   const topGoals = goals.slice(0, 4)
 
   return (

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const date = searchParams.get('date') || new Date().toISOString().split('T')[0]
 
   const { data, error } = await supabase
-    .from('tasks')
+    .from('today')
     .select('*, goals(title, category, id)')
     .eq('user_id', user.id)
     .eq('scheduled_date', date)
