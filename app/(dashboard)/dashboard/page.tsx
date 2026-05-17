@@ -6,6 +6,7 @@ import { GoalsProgressCard } from './GoalsProgressCard'
 import { HabitsCard } from './HabitsCard'
 import { QuickStats } from './QuickStats'
 import { format } from 'date-fns'
+import { EveningCheckinModal } from '@/components/dashboard/EveningCheckinModal'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -13,7 +14,6 @@ export default async function DashboardPage() {
 
   const today = format(new Date(), 'yyyy-MM-dd')
 
-  // Parallel data fetching
   const [
     { data: profile },
     { data: goals },
@@ -33,13 +33,17 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <DashboardHeader 
-        profile={profile} 
+      <DashboardHeader
+        profile={profile}
         completedTasks={completedTasks}
         totalTasks={totalTasks}
       />
 
-      <QuickStats 
+      <div className="flex justify-end">
+        <EveningCheckinModal />
+      </div>
+
+      <QuickStats
         totalGoals={goals?.length || 0}
         completedTasks={completedTasks}
         totalTasks={totalTasks}
@@ -47,17 +51,15 @@ export default async function DashboardPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main content - takes 2 cols */}
         <div className="lg:col-span-2 space-y-6">
-          <MorningBriefingCard 
+          <MorningBriefingCard
             existingBriefing={todayBriefing?.content || null}
           />
-          <TodaysTasksCard 
+          <TodaysTasksCard
             initialTasks={todaysTasks || []}
           />
         </div>
 
-        {/* Right sidebar */}
         <div className="space-y-6">
           <GoalsProgressCard goals={goals || []} />
           <HabitsCard habits={habits || []} />
