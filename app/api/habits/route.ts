@@ -25,6 +25,7 @@ export async function POST(request: Request) {
       color: body.color,
       icon: body.icon,
       is_active: true,
+      updated_at: new Date().toISOString()
     })
     .select()
     .single()

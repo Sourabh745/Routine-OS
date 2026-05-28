@@ -41,7 +41,7 @@ export function GoalsProgressCard({ goals }: GoalsProgressCardProps) {
           Active Goals
         </CardTitle>
         <Link href="/goals" className="text-purple-400 hover:text-purple-300 text-xs">
-          View all →
+          View all
         </Link>
       </CardHeader>
       <CardContent className="space-y-4">

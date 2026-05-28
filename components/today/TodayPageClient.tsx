@@ -32,7 +32,7 @@ type GoalOption = {
 type TodayPageClientProps = {
   initialTasks: Task[]
   initialOverdueTasks: Task[]
-  goals: GoalOption[]
+  goals: any
 }
 
 const priorityOrder = { high: 0, medium: 1, low: 2 }
@@ -215,21 +215,32 @@ export function TodayPageClient({
             placeholder="Add a task for today..."
             className="md:col-span-2 bg-slate-800 border-slate-700 text-white"
           />
-
           <Select value={newTaskGoalId} onValueChange={setNewTaskGoalId}>
             <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-              <SelectValue placeholder="Goal" />
+              <SelectValue>
+                {newTaskGoalId === "none"
+                  ? "No goal"
+                  : goals?.find((g: any) => g.id === newTaskGoalId)?.title?.length > 15
+                  ? goals
+                      .find((g: any) => g.id === newTaskGoalId)
+                      ?.title.slice(0, 15) + "..."
+                  : goals?.find((g: any) => g.id === newTaskGoalId)?.title || "Goal"}
+              </SelectValue>
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
+
+            <SelectContent
+              position="popper"
+              className="bg-slate-800 border-slate-700"
+            >
               <SelectItem value="none">No goal</SelectItem>
-              {goals.map((goal) => (
+
+              {goals.map((goal: any) => (
                 <SelectItem key={goal.id} value={goal.id}>
                   {goal.title}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-
           <div className="flex gap-3">
             <Select
               value={newTaskPriority}
@@ -256,7 +267,7 @@ export function TodayPageClient({
           <Button
             onClick={createTask}
             disabled={creating || !newTaskTitle.trim()}
-            className="md:col-span-4 bg-purple-600 hover:bg-purple-700"
+            className="md:col-span-4 bg-purple-600 hover:bg-purple-700 w-30 m-auto"
           >
             {creating ? 'Adding...' : 'Add Task'}
           </Button>

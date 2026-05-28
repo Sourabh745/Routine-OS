@@ -2,7 +2,8 @@
 
 import { Profile } from '@/lib/supabase/types'
 import { format } from 'date-fns'
-import { Sun, Moon, Sunset } from 'lucide-react'
+import { Sun, Moon, Sunset, Clock } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 interface DashboardHeaderProps {
   profile: Profile | null
@@ -20,6 +21,29 @@ function getGreeting() {
 export function DashboardHeader({ profile, completedTasks, totalTasks }: DashboardHeaderProps) {
   const { text, Icon } = getGreeting()
   const firstName = profile?.full_name?.split(' ')[0] || 'there'
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const [currentTime, setCurrentTime] = useState('')
+
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date()
+      const timeString = now.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      })
+      setCurrentTime(timeString)
+    }
+
+    updateClock()
+    const interval = setInterval(updateClock, 1000)
+
+    return () => clearInterval(interval)
+  }, [timezone])
+
   const today = format(new Date(), 'EEEE, MMMM d, yyyy')
 
   return (
@@ -31,9 +55,17 @@ export function DashboardHeader({ profile, completedTasks, totalTasks }: Dashboa
             {text}, {firstName}
           </h1>
         </div>
-        <p className="text-slate-400">{today}</p>
+
+        <div className="flex items-center gap-3 text-slate-400">
+          <span>{today}</span>
+          <span className="text-slate-600">•</span>
+          <div className="flex items-center gap-1.5 font-mono text-sm">
+            <Clock className="w-4 h-4" />
+            <span>{currentTime}</span>
+          </div>
+        </div>
       </div>
-      
+
       {totalTasks > 0 && (
         <div className="text-right">
           <div className="text-2xl font-bold text-white">

@@ -7,7 +7,7 @@ export const agentTools = {
   
   getUserGoals: tool({
     description: 'Fetch all active goals for the user to understand their priorities',
-    parameters: z.object({
+    inputSchema: z.object({
       status: z.enum(['active', 'paused', 'completed', 'all']).optional().default('active'),
     }),
     execute: async ({ status }: { status?: string }) => {
@@ -31,10 +31,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 2: Get today's tasks
   getTodaysTasks: tool({
     description: 'Get all tasks scheduled for today to show current workload',
-    parameters: z.object({
+    inputSchema: z.object({
       date: z.string().optional().describe('Date in YYYY-MM-DD format, defaults to today'),
     }),
     execute: async ({ date }: { date?: string }) => {
@@ -61,10 +60,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 3: Create tasks
   createTasks: tool({
     description: 'Create one or multiple tasks for the user based on their goals',
-    parameters: z.object({
+    inputSchema: z.object({
       tasks: z.array(z.object({
         title: z.string().describe('Clear, actionable task title'),
         description: z.string().optional(),
@@ -96,10 +94,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 4: Update goal progress
   updateGoalProgress: tool({
     description: 'Update the progress percentage of a goal based on completed tasks',
-    parameters: z.object({
+    inputSchema: z.object({
       goal_id: z.string(),
       progress_percentage: z.number().min(0).max(100),
       reason: z.string().describe('Why this progress update is being made'),
@@ -124,7 +121,7 @@ export const agentTools = {
 
   getHabitData: tool({
     description: 'Get user habits and their completion status for the past week',
-    parameters: z.object({
+    inputSchema: z.object({
       days: z.number().default(7).describe('Number of past days to check'),
     }),
     execute: async ({ days }: { days?: number }) => {
@@ -151,10 +148,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 6: Store agent insight/memory
   storeAgentMemory: tool({
     description: 'Store a pattern or insight discovered about the user for future reference',
-    parameters: z.object({
+    inputSchema: z.object({
       memory_type: z.enum(['pattern', 'preference', 'insight', 'context']),
       key: z.string().describe('Short identifier for this memory'),
       value: z.string().describe('The actual insight or pattern'),
@@ -165,7 +161,6 @@ export const agentTools = {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Unauthorized')
 
-      // Upsert - update if exists, create if not
       const { data, error } = await supabase
         .from('agent_memory')
         .upsert({
@@ -183,10 +178,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 7: Get agent memories
   getAgentMemory: tool({
     description: 'Retrieve stored patterns and insights about the user',
-    parameters: z.object({
+    inputSchema: z.object({
       memory_type: z.enum(['pattern', 'preference', 'insight', 'context', 'all']).optional().default('all'),
     }),
     execute: async ({ memory_type }: { memory_type?: string }) => {
@@ -210,10 +204,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 8: Get journal entries
   getJournalEntries: tool({
     description: 'Get recent journal entries to understand user mood and patterns',
-    parameters: z.object({
+    inputSchema: z.object({
       limit: z.number().default(5).describe('Number of recent entries to fetch'),
     }),
     execute: async ({ limit }: { limit?: any }) => {
@@ -233,10 +226,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 9: Calculate date math
   calculateDates: tool({
     description: 'Calculate dates, deadlines, and time remaining for scheduling',
-    parameters: z.object({
+    inputSchema: z.object({
       operation: z.enum(['days_until', 'days_since', 'add_days', 'week_range']),
       date: z.string().describe('Reference date in YYYY-MM-DD format'),
       days: z.number().optional(),
@@ -276,10 +268,9 @@ export const agentTools = {
     }
   }),
 
-  // Tool 10: Save report
   saveReport: tool({
     description: 'Save a generated report (weekly summary, daily briefing, etc.)',
-    parameters: z.object({
+    inputSchema: z.object({
       report_type: z.enum(['daily', 'weekly', 'monthly']),
       title: z.string(),
       content: z.string(),

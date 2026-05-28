@@ -54,7 +54,6 @@ export function Sidebar({ profile }: SidebarProps) {
 
   return (
     <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
-      {/* Logo */}
       <div className="p-4 border-b border-slate-800">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="p-1.5 bg-purple-600 rounded-lg">
@@ -64,7 +63,6 @@ export function Sidebar({ profile }: SidebarProps) {
         </Link>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href
@@ -77,7 +75,7 @@ export function Sidebar({ profile }: SidebarProps) {
                   : "text-slate-400 hover:text-white hover:bg-slate-800"
               )}>
                 <item.icon className={cn(
-                  "w-4 h-4 flex-shrink-0",
+                  "w-4 h-4 shrink-0",
                   isActive ? "text-white" : "text-slate-400 group-hover:text-white"
                 )} />
                 <span className="text-sm font-medium">{item.label}</span>
@@ -92,7 +90,6 @@ export function Sidebar({ profile }: SidebarProps) {
         })}
       </nav>
 
-      {/* User Profile */}
       <div className="p-3 border-t border-slate-800">
         <Link href="/settings">
           <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors mb-1">
@@ -109,7 +106,7 @@ export function Sidebar({ profile }: SidebarProps) {
                 {profile?.email}
               </p>
             </div>
-            <Settings className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <Settings className="w-4 h-4 text-slate-500 shrink-0" />
           </div>
         </Link>
         <Button

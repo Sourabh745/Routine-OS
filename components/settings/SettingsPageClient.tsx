@@ -1,6 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import { Profile } from '@/lib/supabase/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -14,10 +21,11 @@ type Props = {
 
 export function SettingsPageClient({ profile }: Props) {
   const [saving, setSaving] = useState(false)
+  const timezones = Intl.supportedValuesOf('timeZone')
 
   const [form, setForm] = useState({
     full_name: profile.full_name || '',
-    timezone: profile.timezone || 'UTC',
+    timezone: profile.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
     morning_briefing_time: profile.morning_briefing_time || '08:00',
     evening_checkin_time: profile.evening_checkin_time || '21:00',
   })
@@ -45,7 +53,6 @@ export function SettingsPageClient({ profile }: Props) {
   return (
     <div className="space-y-6">
 
-      {/* Profile */}
       <Card className="bg-slate-900 border-slate-800">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
@@ -65,7 +72,6 @@ export function SettingsPageClient({ profile }: Props) {
         </CardContent>
       </Card>
 
-      {/* Time Preferences */}
       <Card className="bg-slate-900 border-slate-800">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
@@ -110,7 +116,6 @@ export function SettingsPageClient({ profile }: Props) {
         </CardContent>
       </Card>
 
-      {/* Timezone */}
       <Card className="bg-slate-900 border-slate-800">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
@@ -119,14 +124,32 @@ export function SettingsPageClient({ profile }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Input
+          {/* <Input
             value={form.timezone}
             onChange={(e) =>
               setForm((prev) => ({ ...prev, timezone: e.target.value }))
             }
             placeholder="e.g. Asia/Kolkata"
             className="bg-slate-800 border-slate-700 text-white"
-          />
+          /> */}
+          <Select
+  value={form.timezone}
+  onValueChange={(v) =>
+    setForm((prev) => ({ ...prev, timezone: v }))
+  }
+>
+  <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+    <SelectValue placeholder="Select timezone" />
+  </SelectTrigger>
+
+  <SelectContent className="bg-slate-800 border-slate-700 max-h-72 overflow-y-auto">
+    {timezones.map((tz) => (
+      <SelectItem key={tz} value={tz}>
+        {tz}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
         </CardContent>
       </Card>
 

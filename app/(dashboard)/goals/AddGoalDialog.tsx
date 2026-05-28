@@ -41,7 +41,6 @@ export function AddGoalDialog() {
     setStep('planning')
 
     try {
-      // Step 1: Create goal
       const goalRes = await fetch('/api/goals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,7 +48,6 @@ export function AddGoalDialog() {
       })
       const { goal } = await goalRes.json()
 
-      // Step 2: AI breaks it down
       toast.info('AI is planning your goal...')
       const breakdownRes = await fetch('/api/goals/breakdown', {
         method: 'POST',

@@ -9,7 +9,6 @@ import { Progress } from '@/components/ui/progress'
 import { CheckSquare, Clock, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 
 interface TodaysTasksCardProps {
@@ -150,9 +149,9 @@ function TaskItem({ task, onToggle, isUpdating }: {
           )}>
             {task.title}
           </p>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {task.is_ai_generated && (
-              <Zap className="w-3 h-3 text-purple-400" title="AI Generated" />
+              <Zap className="w-3 h-3 text-purple-400" />
             )}
             <Badge className={cn("text-xs border", priorityColors[task.priority])}>
               {task.priority}

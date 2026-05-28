@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { format, subDays } from 'date-fns'
+import { addDays, format, startOfWeek, subDays } from 'date-fns'
 import { Habit, HabitLog } from '@/lib/supabase/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -20,14 +20,13 @@ type HabitsPageClientProps = {
 }
 
 const colors = [
-  '#6366f1',
-  '#8b5cf6',
-  '#ec4899',
-  '#f59e0b',
-  '#10b981',
-  '#06b6d4',
-]
-
+  { label: "Blue", value: "#6366f1" },
+  { label: "Purple", value: "#8b5cf6" },
+  { label: "Pink", value: "#ec4899" },
+  { label: "Yellow", value: "#f59e0b" },
+  { label: "Green", value: "#10b981" },
+  { label: "Cyan", value: "#06b6d4" },
+];
 const icons = ['⭐', '💪', '📚', '🧘', '🏃', '💧', '📝', '🎯', '🔥', '🥗']
 
 export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClientProps) {
@@ -53,8 +52,9 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
     logs.some((log) => log.habit_id === habit.id && log.logged_date === today)
   ).length
 
+  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }) // 1 = Monday
   const weeklyRange = Array.from({ length: 7 }).map((_, i) =>
-    format(subDays(new Date(), 6 - i), 'yyyy-MM-dd')
+    format(addDays(weekStart, i), 'yyyy-MM-dd')
   )
 
   const logSet = useMemo(() => {
@@ -122,7 +122,19 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
         })
 
         if (!res.ok) throw new Error('Failed')
-        toast.success('Habit unlogged')
+        const data = await res.json()
+        setHabits((prev) =>
+          prev.map((h) =>
+            h.id === habit.id
+              ? {
+                  ...h,
+                  streak_count: data.currentStreak,
+                  longest_streak: data.longestStreak,
+                }
+              : h
+          )
+        )
+      toast.success('Habit unlogged')
       } catch {
         setLogs(previousLogs)
         toast.error('Failed to update habit')
@@ -165,6 +177,18 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
         ...prev.filter((log) => !(log.habit_id === habit.id && log.logged_date === today && log.id.startsWith('temp-'))),
       ])
 
+      setHabits((prev) =>
+        prev.map((h) =>
+          h.id === habit.id
+            ? {
+                ...h,
+                streak_count: data.currentStreak,
+                longest_streak: data.longestStreak,
+              }
+            : h
+        )
+      )
+      
       toast.success(`${habit.icon} ${habit.title} logged`)
     } catch {
       setLogs(previousLogs)
@@ -273,7 +297,7 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
               <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectContent position="popper" className="bg-slate-800 border-slate-700">
                 <SelectItem value="daily">Daily</SelectItem>
                 <SelectItem value="weekly">Weekly</SelectItem>
                 <SelectItem value="weekdays">Weekdays</SelectItem>
@@ -295,7 +319,7 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
               <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectContent position="popper" className="bg-slate-800 border-slate-700">
                 {icons.map((icon) => (
                   <SelectItem key={icon} value={icon}>
                     {icon}
@@ -311,10 +335,13 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
               <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectContent 
+                position="popper"
+                className="bg-slate-800 border-slate-700"
+              >
                 {colors.map((color) => (
-                  <SelectItem key={color} value={color}>
-                    {color}
+                  <SelectItem key={color.value} value={color.value}>
+                    {color.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -398,23 +425,32 @@ export function HabitsPageClient({ initialHabits, initialLogs }: HabitsPageClien
                           <span>Longest: {habit.longest_streak}</span>
                           <span>Category: {habit.category}</span>
                         </div>
-
                         <div className="flex gap-2 mt-3">
                           {weeklyRange.map((date) => {
                             const checked = logSet.has(`${habit.id}-${date}`)
+                            const isToday = date === today
+                            const dayLabel = format(new Date(date + 'T00:00:00'), 'EEE')
                             return (
-                              <div
-                                key={date}
-                                className={cn(
-                                  'w-7 h-7 rounded-md border',
-                                  checked ? 'border-transparent' : 'border-slate-700 bg-slate-800'
-                                )}
-                                style={{
-                                  backgroundColor: checked ? habit.color : undefined,
-                                  opacity: checked ? 1 : 0.6,
-                                }}
-                                title={date}
-                              />
+                              <div key={date} className="flex flex-col items-center gap-1">
+                                <div
+                                  className={cn(
+                                    'w-7 h-7 rounded-md border',
+                                    isToday && !checked ? 'border-slate-400 bg-slate-800' : '',
+                                    checked ? 'border-transparent' : 'border-slate-700 bg-slate-800'
+                                  )}
+                                  style={{
+                                    backgroundColor: checked ? habit.color : undefined,
+                                    opacity: checked ? 1 : 0.6,
+                                  }}
+                                  title={date}
+                                />
+                                <span className={cn(
+                                  'text-[10px]',
+                                  isToday ? 'text-white font-bold' : 'text-slate-600'
+                                )}>
+                                  {dayLabel}
+                                </span>
+                              </div>
                             )
                           })}
                         </div>
